@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AD.Distances
 {
     [PublicAPI]
+    [JsonConverter(typeof(CountryJsonConverter))]
     public class Country
     {
         [NotNull]
@@ -18,7 +22,7 @@ namespace AD.Distances
         [ItemNotNull]
         public IReadOnlyList<City> Cities { get; }
 
-        public Country([NotNull] string name, double population, [NotNull][ItemNotNull] IEnumerable<City> cities)
+        public Country([NotNull] string name, double population, [NotNull] [ItemNotNull] IEnumerable<City> cities)
         {
             if (name is null)
             {
@@ -101,6 +105,85 @@ namespace AD.Distances
             });
 
             return results;
+        }
+
+        /// <summary>
+        /// Custom JSON converter for the <see cref="Country"/> class.
+        /// </summary>
+        private sealed class CountryJsonConverter : JsonConverter
+        {
+            /// <summary>
+            /// True if the type implements <see cref="Country"/>; otherwise false.
+            /// </summary>
+            /// <param name="objectType">
+            /// The type to compare.
+            /// </param>
+            public override bool CanConvert(Type objectType)
+            {
+                return typeof(Country).GetTypeInfo().IsAssignableFrom(objectType);
+            }
+
+            /// <summary>
+            /// Reads the JSON representation of the object.
+            /// </summary>
+            /// <param name="reader">
+            /// The <see cref="JsonReader"/> to read from.
+            /// </param>
+            /// <param name="objectType">
+            /// Type of the object.
+            /// </param>
+            /// <param name="existingValue">
+            /// The existing value of object being read.
+            /// </param>
+            /// <param name="serializer">
+            /// The calling serializer.
+            /// </param>
+            /// <returns>
+            /// The object value.
+            /// </returns>
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                JObject jObject = JObject.Load(reader);
+
+                return
+                    new Country(
+                        jObject.Value<string>("Name"),
+                        jObject.Value<double>("Population"),
+                        jObject.Values<City>("Cities"));
+            }
+
+            /// <summary>
+            /// Writes the JSON representation of the object.
+            /// </summary>
+            /// <param name="writer">
+            /// The <see cref="JsonWriter"/> to write to.
+            /// </param>
+            /// <param name="value">
+            /// The value.
+            /// </param>
+            /// <param name="serializer">
+            /// The calling serializer.
+            /// </param>
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                Country country = (Country)value;
+
+                JToken token =
+                    new JObject(
+                        new JProperty(
+                            nameof(Name),
+                            country.Name),
+                        new JProperty(
+                            nameof(Population),
+                            country.Population),
+                        new JProperty(
+                            nameof(Cities),
+                            new JArray(
+                                country.Cities
+                                       .Select(JToken.FromObject))));
+
+                token.WriteTo(writer);
+            }
         }
     }
 }

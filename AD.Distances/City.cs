@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Reflection;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AD.Distances
 {
     [PublicAPI]
+    [JsonConverter(typeof(CityJsonConverter))]
     public class City
     {
         [NotNull]
@@ -11,9 +15,9 @@ namespace AD.Distances
 
         public double Population { get; }
 
-        public Location Location { get; }
+        public Coordinates Coordinates { get; }
 
-        public City([NotNull] string name, double population, Location location)
+        public City([NotNull] string name, double population, Coordinates location)
         {
             if (name is null)
             {
@@ -26,7 +30,7 @@ namespace AD.Distances
 
             Name = name;
             Population = population;
-            Location = location;
+            Coordinates = location;
         }
 
         /// <summary>
@@ -51,7 +55,84 @@ namespace AD.Distances
                 throw new ArgumentNullException(nameof(b));
             }
 
-            return Location.GreatCircleDistance(a.Location, b.Location);
+            return Coordinates.GreatCircleDistance(a.Coordinates, b.Coordinates);
+        }
+
+        /// <summary>
+        /// Custom JSON converter for the <see cref="City"/> class.
+        /// </summary>
+        private sealed class CityJsonConverter : JsonConverter
+        {
+            /// <summary>
+            /// True if the type implements <see cref="City"/>; otherwise false.
+            /// </summary>
+            /// <param name="objectType">
+            /// The type to compare.
+            /// </param>
+            public override bool CanConvert(Type objectType)
+            {
+                return typeof(City).GetTypeInfo().IsAssignableFrom(objectType);
+            }
+
+            /// <summary>
+            /// Reads the JSON representation of the object.
+            /// </summary>
+            /// <param name="reader">
+            /// The <see cref="JsonReader"/> to read from.
+            /// </param>
+            /// <param name="objectType">
+            /// Type of the object.
+            /// </param>
+            /// <param name="existingValue">
+            /// The existing value of object being read.
+            /// </param>
+            /// <param name="serializer">
+            /// The calling serializer.
+            /// </param>
+            /// <returns>
+            /// The object value.
+            /// </returns>
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                JObject jObject = JObject.Load(reader);
+
+                return
+                    new City(
+                        jObject.Value<string>("Name"),
+                        jObject.Value<double>("Population"),
+                        jObject.Value<Coordinates>("Location"));
+            }
+
+            /// <summary>
+            /// Writes the JSON representation of the object.
+            /// </summary>
+            /// <param name="writer">
+            /// The <see cref="JsonWriter"/> to write to.
+            /// </param>
+            /// <param name="value">
+            /// The value.
+            /// </param>
+            /// <param name="serializer">
+            /// The calling serializer.
+            /// </param>
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                City city = (City)value;
+
+                JToken token =
+                    new JObject(
+                        new JProperty(
+                            nameof(Name),
+                            city.Name),
+                        new JProperty(
+                            nameof(Population),
+                            city.Population),
+                        new JProperty(
+                            nameof(Coordinates),
+                            JToken.FromObject(city.Coordinates)));
+
+                token.WriteTo(writer);
+            }
         }
     }
 }

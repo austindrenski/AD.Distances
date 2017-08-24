@@ -32,7 +32,9 @@ namespace DistancesAPI
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services. 
-            services.AddResponseCompression(
+            services.AddApplicationInsightsTelemetry(Configuration)
+                    .AddLogging()
+                    .AddResponseCompression(
                         x =>
                         {
                             x.Providers.Add<GzipCompressionProvider>();
@@ -47,9 +49,11 @@ namespace DistancesAPI
                         {
                             x.LowercaseUrls = true;
                         })
-                    .AddApplicationInsightsTelemetry(Configuration)
-                    .AddLogging()
-                    .AddMvc();
+                    .AddMvc(
+                        x =>
+                        {
+                            x.InputFormatters.Add(new DelimitedTextInputFormatter());
+                        });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,7 +88,7 @@ namespace DistancesAPI
                                async context =>
                                {
                                    context.Response.StatusCode = 500;
-                                   context.Response.ContentType = "text/html";
+                                   context.Response.ContentType = "text/plain";
                                    await context.Response.WriteAsync("An internal server error has occured. Contact Austin.Drenski@usitc.gov.");
                                });
                        }));
