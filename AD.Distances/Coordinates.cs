@@ -149,12 +149,8 @@ namespace AD.Distances
 
                 JToken token =
                     new JObject(
-                        new JProperty(
-                            nameof(Latitude),
-                            coordinates.Latitude),
-                        new JProperty(
-                            nameof(Longitude),
-                            coordinates.Longitude));
+                        new JProperty(nameof(Latitude), coordinates.Latitude),
+                        new JProperty(nameof(Longitude), coordinates.Longitude));
 
                 token.WriteTo(writer);
             }

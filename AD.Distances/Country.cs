@@ -22,7 +22,7 @@ namespace AD.Distances
         [ItemNotNull]
         public IReadOnlyList<City> Cities { get; }
 
-        public Country([NotNull] string name, double population, [NotNull] [ItemNotNull] IEnumerable<City> cities)
+        public Country([NotNull] string name, double population, [NotNull][ItemNotNull] IEnumerable<City> cities)
         {
             if (name is null)
             {
@@ -147,9 +147,9 @@ namespace AD.Distances
 
                 return
                     new Country(
-                        jObject.Value<string>("Name"),
-                        jObject.Value<double>("Population"),
-                        jObject.Values<City>("Cities"));
+                        jObject.Value<string>(nameof(Name)),
+                        jObject.Value<double>(nameof(Population)),
+                        jObject.Values<City>(nameof(Cities)));
             }
 
             /// <summary>
@@ -170,17 +170,10 @@ namespace AD.Distances
 
                 JToken token =
                     new JObject(
-                        new JProperty(
-                            nameof(Name),
-                            country.Name),
-                        new JProperty(
-                            nameof(Population),
-                            country.Population),
-                        new JProperty(
-                            nameof(Cities),
-                            new JArray(
-                                country.Cities
-                                       .Select(JToken.FromObject))));
+                        new JProperty(nameof(Name), country.Name),
+                        new JProperty(nameof(Population), country.Population),
+                        new JProperty(nameof(Cities), 
+                            new JArray(country.Cities.Select(JToken.FromObject))));
 
                 token.WriteTo(writer);
             }

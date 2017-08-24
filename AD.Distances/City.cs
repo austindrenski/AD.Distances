@@ -25,7 +25,7 @@ namespace AD.Distances
             }
             if (population < 0)
             {
-                //throw new ArgumentOutOfRangeException(nameof(population));
+                throw new ArgumentOutOfRangeException(nameof(population));
             }
 
             Name = name;
@@ -98,9 +98,9 @@ namespace AD.Distances
 
                 return
                     new City(
-                        jObject.Value<string>("Name"),
-                        jObject.Value<double>("Population"),
-                        jObject.Value<Coordinates>("Location"));
+                        jObject.Value<string>(nameof(Name)),
+                        jObject.Value<double>(nameof(Population)),
+                        jObject.Value<Coordinates>(nameof(Coordinates)));
             }
 
             /// <summary>
@@ -121,14 +121,9 @@ namespace AD.Distances
 
                 JToken token =
                     new JObject(
-                        new JProperty(
-                            nameof(Name),
-                            city.Name),
-                        new JProperty(
-                            nameof(Population),
-                            city.Population),
-                        new JProperty(
-                            nameof(Coordinates),
+                        new JProperty(nameof(Name), city.Name),
+                        new JProperty(nameof(Population), city.Population),
+                        new JProperty(nameof(Coordinates),
                             JToken.FromObject(city.Coordinates)));
 
                 token.WriteTo(writer);
