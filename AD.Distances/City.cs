@@ -25,8 +25,7 @@ namespace AD.Distances
             }
             if (population < 0)
             {
-                //TODO: enable this once in the production environment.
-                //throw new ArgumentOutOfRangeException(nameof(population));
+                throw new ArgumentOutOfRangeException(nameof(population));
             }
 
             Name = name;
