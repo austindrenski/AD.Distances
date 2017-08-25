@@ -1,29 +1,21 @@
-using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace AD.Distances.Tests
 {
-    [TestClass]
     public class GreatCircleDistance
     {
-        private static Coordinates NewYorkCity { get; } = new Coordinates(40.7143528, -74.0059731);
+        private static readonly Coordinates NewYorkCity = new Coordinates(40.7143528, -74.0059731);
 
-        private static Coordinates Chicago { get; } = new Coordinates(41.8781136, -87.6297982);
+        private static readonly Coordinates Chicago = new Coordinates(41.8781136, -87.6297982);
 
-        [TestMethod]
-        public void TestMethod0()
+        [Theory]
+        [MemberData(nameof(NewYorkCity), nameof(NewYorkCity), 0.0)]
+        [MemberData(nameof(NewYorkCity), nameof(Chicago), 1144.0)]
+        public void GreatCircleDistanceTest(Coordinates a, Coordinates b, double expected)
         {
-            double distance = Coordinates.GreatCircleDistance(NewYorkCity, NewYorkCity);
+            double distance = Coordinates.GreatCircleDistance(a, b);
 
-            Assert.AreEqual(0.0, distance);
-        }
-
-        [TestMethod]
-        public void TestMethod1()
-        {
-            double distance = Coordinates.GreatCircleDistance(NewYorkCity, Chicago);
-
-            Assert.AreEqual(1144, Math.Round(distance));
+            Assert.Equal(expected, distance);
         }
     }
 }
