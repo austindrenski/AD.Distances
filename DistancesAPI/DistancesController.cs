@@ -13,15 +13,27 @@ namespace DistancesAPI
     public class DistancesController : Controller
     {
         [HttpGet]
-        public IActionResult PopulationWeightedDistance()
+        [HttpGet("json")]
+        public IActionResult PopulationWeightedDistanceFromJson()
         {
             return Json(new { Message = "Submit a JSON array of Country objects." });
         }
 
+        [HttpGet("csv")]
+        public IActionResult PopulationWeightedDistanceFromCsv()
+        {
+            return Json(new { Message = "Submit a CSV string of country-city data." });
+        }
+
+        [HttpPost]
         [HttpPost("json")]
         public IActionResult PopulationWeightedDistanceFromJson([FromBody] IEnumerable<Country> countries)
         {
-            return Json(Country.Distance(countries));
+            IEnumerable<(Country A, Country B, double Distance)> data =
+                Country.Distance(countries);
+
+            return Json(data.Select(x => new { x.A.Year, A = x.A.Name, B = x.B.Name, x.Distance }));
+
         }
 
         [HttpPost("csv")]
@@ -51,7 +63,8 @@ namespace DistancesAPI
                              })
                          .Select(x => new Country(x.Key.Country, x.Key.Year, x.Key.Population, x.Select(y => y.City)));
 
-            IEnumerable<(Country A, Country B, double Distance)> data = Country.Distance(countryData);
+            IEnumerable<(Country A, Country B, double Distance)> data = 
+                Country.Distance(countryData);
 
             return Json(data.Select(x => new { x.A.Year, A = x.A.Name, B = x.B.Name, x.Distance }));
         }

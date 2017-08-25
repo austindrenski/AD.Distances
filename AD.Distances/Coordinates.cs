@@ -6,6 +6,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AD.Distances
 {
+    /// <summary>
+    /// Represents a coordinate set with support for geospatial distance calculations.
+    /// </summary>
     [PublicAPI]
     [JsonConverter(typeof(CoordinatesJsonConverter))]
     public struct Coordinates

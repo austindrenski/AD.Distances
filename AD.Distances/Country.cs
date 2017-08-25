@@ -9,22 +9,52 @@ using Newtonsoft.Json.Linq;
 
 namespace AD.Distances
 {
+    /// <summary>
+    /// Represents a <see cref="Country"/> with characteristics and cities.
+    /// </summary>
     [PublicAPI]
     [JsonConverter(typeof(CountryJsonConverter))]
     public class Country
     {
+        /// <summary>
+        /// The name of the <see cref="Country"/>.
+        /// </summary>
         [NotNull]
         public string Name { get; }
 
+        /// <summary>
+        /// The year in which the characteristics were observed.
+        /// </summary>
         [NotNull]
         public string Year { get; }
 
+        /// <summary>
+        /// The population of the <see cref="Country"/>.
+        /// </summary>
         public double Population { get; }
-        
+
+        /// <summary>
+        /// The collection of cities observed for this <see cref="Country"/>.
+        /// </summary>
         [NotNull]
         [ItemNotNull]
         public IReadOnlyList<City> Cities { get; }
 
+        /// <summary>
+        /// Constructs a <see cref="Country"/> for a given year with the given characteristics.
+        /// </summary>
+        /// <param name="name">
+        /// The name of the <see cref="Country"/>.
+        /// </param>
+        /// <param name="year">
+        /// The year in which the characteristics were observed.
+        /// </param>
+        /// <param name="population">
+        /// The population of the <see cref="Country"/>
+        /// </param>
+        /// <param name="cities">
+        /// The collection of cities observed for this <see cref="Country"/>.
+        /// </param>
         public Country([NotNull] string name, [NotNull] string year, double population, [NotNull][ItemNotNull] IEnumerable<City> cities)
         {
             if (name is null)
@@ -60,6 +90,72 @@ namespace AD.Distances
             return $"({Name}, {Population}, {Cities.Count})";
         }
 
+        /// <summary>
+        /// Calculates the population-weighted distance between the collection of countries grouped by year based on the great-circle distance between constituent cities.
+        /// </summary>
+        /// <param name="countries">
+        /// The collection of countries over which to calculate distances.
+        /// </param>
+        /// <returns>
+        /// A collection of tuples containing the input countries and the calculated distance.
+        /// </returns>
+        [Pure]
+        [NotNull]
+        public static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull][ItemNotNull] IEnumerable<Country> countries)
+        {
+            if (countries is null)
+            {
+                throw new ArgumentNullException(nameof(countries));
+            }
+
+            return countries.GroupBy(x => x.Year).SelectMany(Distance);
+        }
+
+        /// <summary>
+        /// Calculates the population-weighted distance between the group (e.g. by year) of countries based on the great-circle distance between constituent cities.
+        /// </summary>
+        /// <param name="countries">
+        /// The group of countries over which to calculate distances.
+        /// </param>
+        /// <returns>
+        /// A collection of tuples containing the input countries and the calculated distance.
+        /// </returns>
+        [Pure]
+        [NotNull]
+        public static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull][ItemNotNull] IGrouping<string, Country> countries)
+        {
+            if (countries is null)
+            {
+                throw new ArgumentNullException(nameof(countries));
+            }
+
+            Country[] countryArray = countries.ToArray();
+
+            (Country A, Country B, double Distance)[] results = new (Country A, Country B, double Distance)[countryArray.Length * countryArray.Length];
+
+            Parallel.For(0, countryArray.Length, i =>
+            {
+                for (int j = 0; j < countryArray.Length; j++)
+                {
+                    results[countryArray.Length * i + j] = Distance(countryArray[i], countryArray[j]);
+                }
+            });
+
+            return results;
+        }
+
+        /// <summary>
+        /// Calculates the population-weighted distance between two countries based on the great-circle distance between constituent cities.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Country"/>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Country"/>.
+        /// </param>
+        /// <returns>
+        /// A tuple containing the input countries and the calculated distance.
+        /// </returns>
         [Pure]
         public static (Country A, Country B, double Distance) Distance([NotNull] Country a, [NotNull] Country b)
         {
@@ -81,7 +177,7 @@ namespace AD.Distances
                 for (int j = 0; j < b.Cities.Count; j++)
                 {
                     double distance = City.Distance(a.Cities[i], b.Cities[j]);
-                    
+
                     double cityPopulationProduct = a.Cities[i].Population * b.Cities[j].Population;
 
                     result += cityPopulationProduct * distance / countryPopulationProduct;
@@ -89,42 +185,6 @@ namespace AD.Distances
             }
 
             return (a, b, result);
-        }
-
-        [Pure]
-        [NotNull]
-        public static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull][ItemNotNull] IEnumerable<Country> countries)
-        {
-            if (countries is null)
-            {
-                throw new ArgumentNullException(nameof(countries));
-            }
-
-            return countries.GroupBy(x => x.Year).SelectMany(Distance);
-        }
-
-        [Pure]
-        [NotNull]
-        private static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull][ItemNotNull] IGrouping<string, Country> countries)
-        {
-            if (countries is null)
-            {
-                throw new ArgumentNullException(nameof(countries));
-            }
-
-            Country[] countryArray = countries.ToArray();
-
-            (Country A, Country B, double Distance)[] results = new (Country A, Country B, double Distance)[countryArray.Length * countryArray.Length];
-
-            Parallel.For(0, countryArray.Length, i =>
-            {
-                for (int j = 0; j < countryArray.Length; j++)
-                {
-                    results[countryArray.Length * i + j] = Distance(countryArray[i], countryArray[j]);
-                }
-            });
-
-            return results;
         }
 
         /// <summary>
