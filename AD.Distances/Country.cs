@@ -100,15 +100,12 @@ namespace AD.Distances
                 throw new ArgumentNullException(nameof(countries));
             }
 
-            return
-                countries.AsParallel()
-                         .GroupBy(x => (Name: x.Name, Year: x.Year, x.Population))
-                         .SelectMany(Distance);
+            return countries.GroupBy(x => x.Year).SelectMany(Distance);
         }
 
         [Pure]
         [NotNull]
-        private static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull][ItemNotNull] IGrouping<(string, string, double), Country> countries)
+        private static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull][ItemNotNull] IGrouping<string, Country> countries)
         {
             if (countries is null)
             {

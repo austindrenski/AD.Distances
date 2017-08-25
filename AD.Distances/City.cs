@@ -6,17 +6,41 @@ using Newtonsoft.Json.Linq;
 
 namespace AD.Distances
 {
+    /// <summary>
+    /// Represents a city with location and characteristics.
+    /// </summary>
     [PublicAPI]
     [JsonConverter(typeof(CityJsonConverter))]
     public class City
     {
+        /// <summary>
+        /// The name of the <see cref="City"/>.
+        /// </summary>
         [NotNull]
         public string Name { get; }
 
+        /// <summary>
+        /// The population of the <see cref="City"/>.
+        /// </summary>
         public double Population { get; }
 
+        /// <summary>
+        /// The latitude and longitude of the <see cref="City"/>.
+        /// </summary>
         public Coordinates Coordinates { get; }
 
+        /// <summary>
+        /// Constructs a <see cref="City"/> with the given location and characteristics.
+        /// </summary>
+        /// <param name="name">
+        /// The name of the city.
+        /// </param>
+        /// <param name="population">
+        /// The population of the city.
+        /// </param>
+        /// <param name="location">
+        /// The location of the city.
+        /// </param>
         public City([NotNull] string name, double population, Coordinates location)
         {
             if (name is null)
@@ -43,6 +67,18 @@ namespace AD.Distances
             return $"({Name}, {Population})";
         }
 
+        /// <summary>
+        /// Calculates the great-circle distance in kilometers between two cities.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="City"/>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="City"/>.
+        /// </param>
+        /// <returns>
+        /// The great-circle distance in kilometers.
+        /// </returns>
         [Pure]
         public static double Distance([NotNull] City a, [NotNull] City b)
         {
