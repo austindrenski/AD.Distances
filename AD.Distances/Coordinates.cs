@@ -88,12 +88,12 @@ namespace AD.Distances
         }
 
         /// <summary>
-        /// Custom JSON converter for the <see cref="Coordinates"/> class.
+        /// Custom JSON converter for the <see cref="T:AD.Distances.Coordinates" /> class.
         /// </summary>
         private sealed class CoordinatesJsonConverter : JsonConverter
         {
             /// <summary>
-            /// True if the type implements <see cref="Coordinates"/>; otherwise false.
+            /// True if the type implements <see cref="T:AD.Distances.Coordinates" />; otherwise false.
             /// </summary>
             /// <param name="objectType">
             /// The type to compare.
@@ -107,7 +107,7 @@ namespace AD.Distances
             /// Reads the JSON representation of the object.
             /// </summary>
             /// <param name="reader">
-            /// The <see cref="JsonReader"/> to read from.
+            /// The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.
             /// </param>
             /// <param name="objectType">
             /// Type of the object.
@@ -127,15 +127,15 @@ namespace AD.Distances
 
                 return
                     new Coordinates(
-                        jObject.Value<double>("Latitude"),
-                        jObject.Value<double>("Longitude"));
+                        jObject.Value<double>(nameof(Latitude)),
+                        jObject.Value<double>(nameof(Longitude)));
             }
 
             /// <summary>
             /// Writes the JSON representation of the object.
             /// </summary>
             /// <param name="writer">
-            /// The <see cref="JsonWriter"/> to write to.
+            /// The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.
             /// </param>
             /// <param name="value">
             /// The value.

@@ -27,18 +27,11 @@ namespace DistancesAPI
         [HttpPost("csv")]
         public IActionResult PopulationWeightedDistanceFromDelimited([FromBody] string countries)
         {
-            return 
-                PopulationWeightedDistanceFromDelimited(
-                    countries.Split(
-                        new char[] { '\r', '\n' }, 
-                        StringSplitOptions.RemoveEmptyEntries));
-        }
-
-        //[HttpPost("csv")]
-        public IActionResult PopulationWeightedDistanceFromDelimited([FromBody] IEnumerable<string> countries)
-        {
-            Country[] dataArray =
-                countries.SplitDelimitedLine(',')
+            IEnumerable<Country> countryData =
+                countries.Split(
+                             new char[] { '\r', '\n' },
+                             StringSplitOptions.RemoveEmptyEntries)
+                         .SplitDelimitedLine(',')
                          .Skip(1)
                          .Select(x => x.Select(y => y.Trim()).ToArray())
                          .Select(
@@ -49,9 +42,6 @@ namespace DistancesAPI
                                  Population = double.Parse(x[2]),
                                  City = new City(x[3], double.Parse(x[4]), new Coordinates(double.Parse(x[5]), double.Parse(x[6])))
                              })
-
-                         .Where(x => x.Year == "2015")
-
                          .GroupBy(
                              x => new
                              {
@@ -59,12 +49,11 @@ namespace DistancesAPI
                                  x.Country,
                                  x.Population
                              })
-                         .Select(x => new Country(x.Key.Country, x.Key.Population, x.Select(y => y.City)))
-                         .ToArray();
+                         .Select(x => new Country(x.Key.Country, x.Key.Year, x.Key.Population, x.Select(y => y.City)));
 
-            IEnumerable<(Country A, Country B, double Distance)> data = Country.Distance(dataArray);
+            IEnumerable<(Country A, Country B, double Distance)> data = Country.Distance(countryData);
 
-            return Json(data.Select(x => new { A = x.A.Name, B = x.B.Name, x.Distance }));
+            return Json(data.Select(x => new { x.A.Year, A = x.A.Name, B = x.B.Name, x.Distance }));
         }
     }
 }

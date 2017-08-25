@@ -16,17 +16,24 @@ namespace AD.Distances
         [NotNull]
         public string Name { get; }
 
-        public double Population { get; }
+        [NotNull]
+        public string Year { get; }
 
+        public double Population { get; }
+        
         [NotNull]
         [ItemNotNull]
         public IReadOnlyList<City> Cities { get; }
 
-        public Country([NotNull] string name, double population, [NotNull][ItemNotNull] IEnumerable<City> cities)
+        public Country([NotNull] string name, [NotNull] string year, double population, [NotNull][ItemNotNull] IEnumerable<City> cities)
         {
             if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
+            }
+            if (year is null)
+            {
+                throw new ArgumentNullException(nameof(year));
             }
             if (population < 0)
             {
@@ -38,6 +45,7 @@ namespace AD.Distances
             }
 
             Name = name;
+            Year = year;
             Population = population;
             Cities = cities as City[] ?? cities.ToArray();
         }
@@ -73,7 +81,7 @@ namespace AD.Distances
                 for (int j = 0; j < b.Cities.Count; j++)
                 {
                     double distance = City.Distance(a.Cities[i], b.Cities[j]);
-
+                    
                     double cityPopulationProduct = a.Cities[i].Population * b.Cities[j].Population;
 
                     result += cityPopulationProduct * distance / countryPopulationProduct;
@@ -92,7 +100,22 @@ namespace AD.Distances
                 throw new ArgumentNullException(nameof(countries));
             }
 
-            Country[] countryArray = countries as Country[] ?? countries.ToArray();
+            return
+                countries.AsParallel()
+                         .GroupBy(x => (Name: x.Name, Year: x.Year, x.Population))
+                         .SelectMany(Distance);
+        }
+
+        [Pure]
+        [NotNull]
+        private static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull][ItemNotNull] IGrouping<(string, string, double), Country> countries)
+        {
+            if (countries is null)
+            {
+                throw new ArgumentNullException(nameof(countries));
+            }
+
+            Country[] countryArray = countries.ToArray();
 
             (Country A, Country B, double Distance)[] results = new (Country A, Country B, double Distance)[countryArray.Length * countryArray.Length];
 
@@ -108,12 +131,12 @@ namespace AD.Distances
         }
 
         /// <summary>
-        /// Custom JSON converter for the <see cref="Country"/> class.
+        /// Custom JSON converter for the <see cref="Country" /> class.
         /// </summary>
         private sealed class CountryJsonConverter : JsonConverter
         {
             /// <summary>
-            /// True if the type implements <see cref="Country"/>; otherwise false.
+            /// True if the type implements <see cref="T:AD.Distances.Country" />; otherwise false.
             /// </summary>
             /// <param name="objectType">
             /// The type to compare.
@@ -148,6 +171,7 @@ namespace AD.Distances
                 return
                     new Country(
                         jObject.Value<string>(nameof(Name)),
+                        jObject.Value<string>(nameof(Year)),
                         jObject.Value<double>(nameof(Population)),
                         jObject.Values<City>(nameof(Cities)));
             }
@@ -171,6 +195,7 @@ namespace AD.Distances
                 JToken token =
                     new JObject(
                         new JProperty(nameof(Name), country.Name),
+                        new JProperty(nameof(Year), country.Year),
                         new JProperty(nameof(Population), country.Population),
                         new JProperty(nameof(Cities), 
                             new JArray(country.Cities.Select(JToken.FromObject))));
