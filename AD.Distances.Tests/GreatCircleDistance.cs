@@ -1,9 +1,12 @@
+using System;
 using Xunit;
 
 namespace AD.Distances.Tests
 {
     public class GreatCircleDistance
     {
+        private const double Tolerance = 1e-15;
+        
         private static readonly Coordinates NewYorkCity = new Coordinates(40.7143528, -74.0059731);
 
         private static readonly Coordinates Chicago = new Coordinates(41.8781136, -87.6297982);
@@ -15,7 +18,7 @@ namespace AD.Distances.Tests
         {
             double distance = Coordinates.GreatCircleDistance(a, b);
 
-            Assert.Equal(expected, distance);
+            Assert.True(Math.Abs(expected - distance) < Tolerance);
         }
     }
 }
