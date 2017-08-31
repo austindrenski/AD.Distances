@@ -1,5 +1,4 @@
-﻿using System.IO;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,15 +24,19 @@ namespace DistancesAPI
 
             return
                 WebHost.CreateDefaultBuilder(args)
-                       .UseKestrel(
-                           options =>
-                           {
-                               options.AddServerHeader = false;
-                           })
                        .UseConfiguration(configuration)
-                       .UseContentRoot(Directory.GetCurrentDirectory())
                        .UseStartup<Startup>()
                        .UseApplicationInsights()
+                       .UseHttpSys(
+                           x =>
+                           {
+                               x.EnableResponseCaching = true;
+                           })
+                       //.UseKestrel(
+                       //    options =>
+                       //    {
+                       //        options.AddServerHeader = false;
+                       //    })
                        .Build();
         }
     }

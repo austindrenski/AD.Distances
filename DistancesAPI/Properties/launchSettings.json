@@ -10,7 +10,7 @@
   "profiles": {
     "DistancesAPI": {
       "commandName": "Project",
-      "commandLineArgs": "/urls http://+:5000",
+      "commandLineArgs": "/urls http://localhost:5000/api",
       "applicationUrl": ""
     }
   }
