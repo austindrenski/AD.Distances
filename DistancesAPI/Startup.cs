@@ -61,11 +61,7 @@ namespace DistancesAPI
         {
             //loggerFactory.AddConsole(LogLevel.Information, false);
 
-            app.UseMvc(
-                   x =>
-                   {
-                       x.MapRoute("default", "api/{controller}/{action?}");
-                   })
+            app.UseMvc()
                .UseResponseCompression()
                .UseStaticFiles()
                .Use(

@@ -9,10 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace DistancesAPI
 {
     [PublicAPI]
-    [Route("[controller]")]
     public class DistancesController : Controller
     {
-        [HttpGet]
+        [HttpGet("")]
         [HttpGet("json")]
         public IActionResult PopulationWeightedDistanceFromJson()
         {
@@ -25,7 +24,7 @@ namespace DistancesAPI
             return Json(new { Message = "Submit a CSV string of country-city data." });
         }
 
-        [HttpPost]
+        [HttpPost("")]
         [HttpPost("json")]
         public IActionResult PopulationWeightedDistanceFromJson([FromBody] IEnumerable<Country> countries)
         {
