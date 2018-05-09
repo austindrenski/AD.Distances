@@ -1,20 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>Latest</LangVersion>
     <DefineConstants>JETBRAINS_ANNOTATIONS</DefineConstants>
+    <DocumentationFile>bin/Release/$(TargetFramework)/DistancesAPI.xml</DocumentationFile>
   </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="AD.ApiExtensions" Version="1.1.98" />
-    <PackageReference Include="AD.IO" Version="1.5.35" />
-    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-rc1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="2.2.0" />
+    <PackageReference Include="AD.ApiExtensions" Version="1.1.98"/>
+    <PackageReference Include="AD.IO" Version="1.5.35"/>
+    <PackageReference Include="JetBrains.Annotations" Version="11.1.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-rc1-final"/>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="2.2.0"/>
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\AD.Distances\AD.Distances.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Properties\launchSettings.json" />
+    <ProjectReference Include="..\AD.Distances\AD.Distances.csproj"/>
   </ItemGroup>
 </Project>
