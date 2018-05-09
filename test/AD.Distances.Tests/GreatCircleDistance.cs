@@ -18,6 +18,7 @@ namespace AD.Distances.Tests
             {
                 yield return new object[] { NewYorkCity, NewYorkCity, 0.0 };
                 yield return new object[] { NewYorkCity, Chicago, 1144.0 };
+                yield return new object[] { Chicago, NewYorkCity, 1144.0 };
             }
         }
 

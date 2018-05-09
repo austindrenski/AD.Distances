@@ -26,24 +26,30 @@ namespace DistancesAPI
 
         [HttpPost("")]
         [HttpPost("json")]
-        public IActionResult PopulationWeightedDistanceFromJson([FromBody] IEnumerable<Country> countries)
+        public IActionResult PopulationWeightedDistanceFromJson([NotNull] [FromBody] IEnumerable<Country> countries)
         {
-            IEnumerable<(Country A, Country B, double Distance)> data =
-                Country.Distance(countries);
+            if (countries is null)
+            {
+                throw new ArgumentNullException(nameof(countries));
+            }
+
+            IEnumerable<(Country A, Country B, double Distance)> data = Country.Distance(countries);
 
             return Json(data.Select(x => new { x.A.Year, A = x.A.Name, B = x.B.Name, x.Distance }));
-
         }
 
         [HttpPost("csv")]
-        public IActionResult PopulationWeightedDistanceFromDelimited([FromBody] string countries)
+        public IActionResult PopulationWeightedDistanceFromDelimited([NotNull] [FromBody] string countries)
         {
+            if (countries is null)
+            {
+                throw new ArgumentNullException(nameof(countries));
+            }
+
             IEnumerable<Country> countryData =
-                countries.Split(
-                             new char[] { '\r', '\n' },
-                             StringSplitOptions.RemoveEmptyEntries)
-                         .SplitDelimitedLine(',')
+                countries.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                          .Skip(1)
+                         .Select(x => x.SplitDelimitedLine(','))
                          .Select(x => x.Select(y => y.Trim()).ToArray())
                          .Select(
                              x => new
@@ -62,10 +68,7 @@ namespace DistancesAPI
                              })
                          .Select(x => new Country(x.Key.Country, x.Key.Year, x.Key.Population, x.Select(y => y.City)));
 
-            IEnumerable<(Country A, Country B, double Distance)> data = 
-                Country.Distance(countryData);
-
-            return Json(data.Select(x => new { x.A.Year, A = x.A.Name, B = x.B.Name, x.Distance }));
+            return PopulationWeightedDistanceFromJson(countryData);
         }
     }
 }

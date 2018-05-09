@@ -55,20 +55,23 @@ namespace AD.Distances
         /// <param name="cities">
         /// The collection of cities observed for this <see cref="Country"/>.
         /// </param>
-        public Country([NotNull] string name, [NotNull] string year, double population, [NotNull][ItemNotNull] IEnumerable<City> cities)
+        public Country([NotNull] string name, [NotNull] string year, double population, [NotNull] [ItemNotNull] IEnumerable<City> cities)
         {
             if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
+
             if (year is null)
             {
                 throw new ArgumentNullException(nameof(year));
             }
+
             if (population < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(population));
             }
+
             if (cities is null)
             {
                 throw new ArgumentNullException(nameof(cities));
@@ -84,7 +87,6 @@ namespace AD.Distances
         /// Returns a string that represents the current object.
         /// </summary>
         [Pure]
-        [NotNull]
         public override string ToString()
         {
             return $"({Name}, {Population}, {Cities.Count})";
@@ -101,7 +103,7 @@ namespace AD.Distances
         /// </returns>
         [Pure]
         [NotNull]
-        public static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull][ItemNotNull] IEnumerable<Country> countries)
+        public static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull] [ItemNotNull] IEnumerable<Country> countries)
         {
             if (countries is null)
             {
@@ -122,7 +124,7 @@ namespace AD.Distances
         /// </returns>
         [Pure]
         [NotNull]
-        public static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull][ItemNotNull] IGrouping<string, Country> countries)
+        public static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull] [ItemNotNull] IGrouping<string, Country> countries)
         {
             if (countries is null)
             {
@@ -163,6 +165,7 @@ namespace AD.Distances
             {
                 throw new ArgumentNullException(nameof(a));
             }
+
             if (b is null)
             {
                 throw new ArgumentNullException(nameof(b));
@@ -187,42 +190,39 @@ namespace AD.Distances
             return (a, b, result);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Custom JSON converter for the <see cref="Country" /> class.
+        /// Custom JSON converter for the <see cref="T:AD.Distances.Country" /> class.
         /// </summary>
         private sealed class CountryJsonConverter : JsonConverter
         {
-            /// <summary>
-            /// True if the type implements <see cref="T:AD.Distances.Country" />; otherwise false.
-            /// </summary>
-            /// <param name="objectType">
-            /// The type to compare.
-            /// </param>
+            /// <inheritdoc />
+            [Pure]
             public override bool CanConvert(Type objectType)
             {
                 return typeof(Country).GetTypeInfo().IsAssignableFrom(objectType);
             }
 
-            /// <summary>
-            /// Reads the JSON representation of the object.
-            /// </summary>
-            /// <param name="reader">
-            /// The <see cref="JsonReader"/> to read from.
-            /// </param>
-            /// <param name="objectType">
-            /// Type of the object.
-            /// </param>
-            /// <param name="existingValue">
-            /// The existing value of object being read.
-            /// </param>
-            /// <param name="serializer">
-            /// The calling serializer.
-            /// </param>
-            /// <returns>
-            /// The object value.
-            /// </returns>
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            /// <inheritdoc />
+            [Pure]
+            [NotNull]
+            public override object ReadJson([NotNull] JsonReader reader, Type objectType, [NotNull] object existingValue, [NotNull] JsonSerializer serializer)
             {
+                if (reader is null)
+                {
+                    throw new ArgumentNullException(nameof(reader));
+                }
+
+                if (existingValue is null)
+                {
+                    throw new ArgumentNullException(nameof(existingValue));
+                }
+
+                if (serializer is null)
+                {
+                    throw new ArgumentNullException(nameof(serializer));
+                }
+
                 JObject jObject = JObject.Load(reader);
 
                 return
@@ -233,28 +233,32 @@ namespace AD.Distances
                         jObject.Values<City>(nameof(Cities)));
             }
 
-            /// <summary>
-            /// Writes the JSON representation of the object.
-            /// </summary>
-            /// <param name="writer">
-            /// The <see cref="JsonWriter"/> to write to.
-            /// </param>
-            /// <param name="value">
-            /// The value.
-            /// </param>
-            /// <param name="serializer">
-            /// The calling serializer.
-            /// </param>
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            /// <inheritdoc />
+            public override void WriteJson([NotNull] JsonWriter writer, [NotNull] object value, [NotNull] JsonSerializer serializer)
             {
-                Country country = (Country)value;
+                if (writer is null)
+                {
+                    throw new ArgumentNullException(nameof(writer));
+                }
+
+                if (value is null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
+                if (serializer is null)
+                {
+                    throw new ArgumentNullException(nameof(serializer));
+                }
+
+                Country country = (Country) value;
 
                 JToken token =
                     new JObject(
                         new JProperty(nameof(Name), country.Name),
                         new JProperty(nameof(Year), country.Year),
                         new JProperty(nameof(Population), country.Population),
-                        new JProperty(nameof(Cities), 
+                        new JProperty(nameof(Cities),
                             new JArray(country.Cities.Select(JToken.FromObject))));
 
                 token.WriteTo(writer);

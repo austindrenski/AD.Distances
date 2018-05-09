@@ -11,12 +11,17 @@ namespace AD.Distances
     /// </summary>
     [PublicAPI]
     [JsonConverter(typeof(CoordinatesJsonConverter))]
-    public struct Coordinates
+    public readonly struct Coordinates
     {
         /// <summary>
         /// The mean radius in kilometers of the Earth as defined by the Internation Union of Geodesy and Geophysics (IUGG).
         /// </summary>
         private const double EarthMeanRadius = 6371.0088;
+
+        /// <summary>
+        /// The scalar by which degrees can be multiplied to return radians.
+        /// </summary>
+        private const double DegreesToRadians = Math.PI / 180.0;
 
         /// <summary>
         /// The sine of <see cref="Latitude"/>.
@@ -33,22 +38,34 @@ namespace AD.Distances
         /// </summary>
         public double Latitude { get; }
 
-        /// The longitude in radians.
-        public double Longitude { get; }
-            
         /// <summary>
-        /// Constructs a location defined by the <paramref name="latitude"/> and <paramref name="longitude"/>.
+        /// The longitude in radians.
+        /// </summary>
+        public double Longitude { get; }
+
+        /// <summary>
+        /// Constructs a location defined by the <paramref name="latitude"/> and <paramref name="longitude"/> in degrees.
         /// </summary>
         /// <param name="latitude">
-        /// The latitude in radians.
+        /// The latitude in degrees.
         /// </param>
         /// <param name="longitude">
-        /// The longitude in radians.
+        /// The longitude in degrees.
         /// </param>
         public Coordinates(double latitude, double longitude)
         {
-            Latitude = latitude * Math.PI / 180.0;
-            Longitude = longitude * Math.PI / 180.0;
+            if (latitude < -90.0 || latitude > 90.0)
+            {
+                throw new ArgumentException(nameof(latitude));
+            }
+
+            if (longitude < -180.0 || longitude > 180.0)
+            {
+                throw new ArgumentException(nameof(longitude));
+            }
+
+            Latitude = latitude * DegreesToRadians;
+            Longitude = longitude * DegreesToRadians;
             _sineLatitude = Math.Sin(Latitude);
             _cosineLatitude = Math.Cos(Latitude);
         }
@@ -57,7 +74,6 @@ namespace AD.Distances
         /// Returns a string that represents the current object.
         /// </summary>
         [Pure]
-        [NotNull]
         public override string ToString()
         {
             return $"({Latitude}, {Longitude})";
@@ -90,42 +106,49 @@ namespace AD.Distances
             return EarthMeanRadius * Math.Atan2(Math.Sqrt(numerator), denominator);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Custom JSON converter for the <see cref="T:AD.Distances.Coordinates" /> class.
         /// </summary>
         private sealed class CoordinatesJsonConverter : JsonConverter
         {
-            /// <summary>
-            /// True if the type implements <see cref="T:AD.Distances.Coordinates" />; otherwise false.
-            /// </summary>
-            /// <param name="objectType">
-            /// The type to compare.
-            /// </param>
-            public override bool CanConvert(Type objectType)
+            /// <inheritdoc />
+            [Pure]
+            public override bool CanConvert([NotNull] Type objectType)
             {
+                if (objectType is null)
+                {
+                    throw new ArgumentNullException(nameof(objectType));
+                }
+
                 return typeof(Coordinates).GetTypeInfo().IsAssignableFrom(objectType);
             }
 
-            /// <summary>
-            /// Reads the JSON representation of the object.
-            /// </summary>
-            /// <param name="reader">
-            /// The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.
-            /// </param>
-            /// <param name="objectType">
-            /// Type of the object.
-            /// </param>
-            /// <param name="existingValue">
-            /// The existing value of object being read.
-            /// </param>
-            /// <param name="serializer">
-            /// The calling serializer.
-            /// </param>
-            /// <returns>
-            /// The object value.
-            /// </returns>
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            /// <inheritdoc />
+            [Pure]
+            [NotNull]
+            public override object ReadJson([NotNull] JsonReader reader, [NotNull] Type objectType, [NotNull] object existingValue, [NotNull] JsonSerializer serializer)
             {
+                if (reader is null)
+                {
+                    throw new ArgumentNullException(nameof(reader));
+                }
+
+                if (objectType is null)
+                {
+                    throw new ArgumentNullException(nameof(objectType));
+                }
+
+                if (existingValue is null)
+                {
+                    throw new ArgumentNullException(nameof(existingValue));
+                }
+
+                if (serializer is null)
+                {
+                    throw new ArgumentNullException(nameof(serializer));
+                }
+
                 JObject jObject = JObject.Load(reader);
 
                 return
@@ -134,21 +157,20 @@ namespace AD.Distances
                         jObject.Value<double>(nameof(Longitude)));
             }
 
-            /// <summary>
-            /// Writes the JSON representation of the object.
-            /// </summary>
-            /// <param name="writer">
-            /// The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.
-            /// </param>
-            /// <param name="value">
-            /// The value.
-            /// </param>
-            /// <param name="serializer">
-            /// The calling serializer.
-            /// </param>
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            /// <inheritdoc />
+            public override void WriteJson([NotNull] JsonWriter writer, object value, [NotNull] JsonSerializer serializer)
             {
-                Coordinates coordinates = (Coordinates)value;
+                if (writer is null)
+                {
+                    throw new ArgumentNullException(nameof(writer));
+                }
+
+                if (serializer is null)
+                {
+                    throw new ArgumentNullException(nameof(serializer));
+                }
+
+                Coordinates coordinates = (Coordinates) value;
 
                 JToken token =
                     new JObject(

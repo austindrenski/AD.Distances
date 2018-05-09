@@ -11,7 +11,7 @@ namespace AD.Distances
     /// </summary>
     [PublicAPI]
     [JsonConverter(typeof(CityJsonConverter))]
-    public class City
+    public sealed class City
     {
         /// <summary>
         /// The name of the <see cref="City"/>.
@@ -27,7 +27,7 @@ namespace AD.Distances
         /// <summary>
         /// The latitude and longitude of the <see cref="City"/>.
         /// </summary>
-        public Coordinates Coordinates { get; }
+        public readonly Coordinates Coordinates;
 
         /// <summary>
         /// Constructs a <see cref="City"/> with the given location and characteristics.
@@ -47,6 +47,7 @@ namespace AD.Distances
             {
                 throw new ArgumentNullException(nameof(name));
             }
+
             if (population < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(population));
@@ -61,7 +62,6 @@ namespace AD.Distances
         /// Returns a string that represents the current object.
         /// </summary>
         [Pure]
-        [NotNull]
         public override string ToString()
         {
             return $"({Name}, {Population})";
@@ -86,6 +86,7 @@ namespace AD.Distances
             {
                 throw new ArgumentNullException(nameof(a));
             }
+
             if (b is null)
             {
                 throw new ArgumentNullException(nameof(b));
@@ -94,42 +95,49 @@ namespace AD.Distances
             return Coordinates.GreatCircleDistance(a.Coordinates, b.Coordinates);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Custom JSON converter for the <see cref="City"/> class.
+        /// Custom JSON converter for the <see cref="T:AD.Distances.City" /> class.
         /// </summary>
         private sealed class CityJsonConverter : JsonConverter
         {
-            /// <summary>
-            /// True if the type implements <see cref="City"/>; otherwise false.
-            /// </summary>
-            /// <param name="objectType">
-            /// The type to compare.
-            /// </param>
-            public override bool CanConvert(Type objectType)
+            /// <inheritdoc />
+            [Pure]
+            public override bool CanConvert([NotNull] Type objectType)
             {
+                if (objectType is null)
+                {
+                    throw new ArgumentNullException(nameof(objectType));
+                }
+
                 return typeof(City).GetTypeInfo().IsAssignableFrom(objectType);
             }
 
-            /// <summary>
-            /// Reads the JSON representation of the object.
-            /// </summary>
-            /// <param name="reader">
-            /// The <see cref="JsonReader"/> to read from.
-            /// </param>
-            /// <param name="objectType">
-            /// Type of the object.
-            /// </param>
-            /// <param name="existingValue">
-            /// The existing value of object being read.
-            /// </param>
-            /// <param name="serializer">
-            /// The calling serializer.
-            /// </param>
-            /// <returns>
-            /// The object value.
-            /// </returns>
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            /// <inheritdoc />
+            [Pure]
+            [NotNull]
+            public override object ReadJson([NotNull] JsonReader reader, [NotNull] Type objectType, [NotNull] object existingValue, [NotNull] JsonSerializer serializer)
             {
+                if (reader is null)
+                {
+                    throw new ArgumentNullException(nameof(reader));
+                }
+
+                if (objectType is null)
+                {
+                    throw new ArgumentNullException(nameof(objectType));
+                }
+
+                if (existingValue is null)
+                {
+                    throw new ArgumentNullException(nameof(existingValue));
+                }
+
+                if (serializer is null)
+                {
+                    throw new ArgumentNullException(nameof(serializer));
+                }
+
                 JObject jObject = JObject.Load(reader);
 
                 return
@@ -139,28 +147,31 @@ namespace AD.Distances
                         jObject.Value<Coordinates>(nameof(Coordinates)));
             }
 
-            /// <summary>
-            /// Writes the JSON representation of the object.
-            /// </summary>
-            /// <param name="writer">
-            /// The <see cref="JsonWriter"/> to write to.
-            /// </param>
-            /// <param name="value">
-            /// The value.
-            /// </param>
-            /// <param name="serializer">
-            /// The calling serializer.
-            /// </param>
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            /// <inheritdoc />
+            public override void WriteJson([NotNull] JsonWriter writer, [NotNull] object value, [NotNull] JsonSerializer serializer)
             {
-                City city = (City)value;
+                if (writer is null)
+                {
+                    throw new ArgumentNullException(nameof(writer));
+                }
+
+                if (value is null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
+                if (serializer is null)
+                {
+                    throw new ArgumentNullException(nameof(serializer));
+                }
+
+                City city = (City) value;
 
                 JToken token =
                     new JObject(
                         new JProperty(nameof(Name), city.Name),
                         new JProperty(nameof(Population), city.Population),
-                        new JProperty(nameof(Coordinates),
-                            JToken.FromObject(city.Coordinates)));
+                        new JProperty(nameof(Coordinates), JToken.FromObject(city.Coordinates)));
 
                 token.WriteTo(writer);
             }

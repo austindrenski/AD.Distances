@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AD.Distances", "AD.Distances\AD.Distances.csproj", "{B5ACA397-6ED7-4984-9288-24723D2615AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AD.Distances", "src\AD.Distances\AD.Distances.csproj", "{B5ACA397-6ED7-4984-9288-24723D2615AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistancesAPI", "DistancesAPI\DistancesAPI.csproj", "{1A16F8ED-6D5F-4A71-8210-7AA30D25B0BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistancesAPI", "src\DistancesAPI\DistancesAPI.csproj", "{1A16F8ED-6D5F-4A71-8210-7AA30D25B0BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AD.Distances.Tests", "AD.Distances.Tests\AD.Distances.Tests.csproj", "{42EAB988-5057-468C-AB20-197EF484A3A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AD.Distances.Tests", "test\AD.Distances.Tests\AD.Distances.Tests.csproj", "{42EAB988-5057-468C-AB20-197EF484A3A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
