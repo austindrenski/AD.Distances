@@ -9,29 +9,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace DistancesAPI
 {
     [PublicAPI]
+    [Route("")]
     public class DistancesController : Controller
     {
         [HttpGet("")]
         [HttpGet("json")]
         public IActionResult PopulationWeightedDistanceFromJson()
-        {
-            return Json(new { Message = "Submit a JSON array of Country objects." });
-        }
+            => Json(new { Message = "Submit a JSON array of Country objects." });
 
         [HttpGet("csv")]
         public IActionResult PopulationWeightedDistanceFromCsv()
-        {
-            return Json(new { Message = "Submit a CSV string of country-city data." });
-        }
+            => Json(new { Message = "Submit a CSV string of country-city data." });
 
         [HttpPost("")]
         [HttpPost("json")]
         public IActionResult PopulationWeightedDistanceFromJson([NotNull] [FromBody] IEnumerable<Country> countries)
         {
             if (countries is null)
-            {
                 throw new ArgumentNullException(nameof(countries));
-            }
 
             IEnumerable<(Country A, Country B, double Distance)> data = Country.Distance(countries);
 
@@ -42,9 +37,7 @@ namespace DistancesAPI
         public IActionResult PopulationWeightedDistanceFromDelimited([NotNull] [FromBody] string countries)
         {
             if (countries is null)
-            {
                 throw new ArgumentNullException(nameof(countries));
-            }
 
             IEnumerable<Country> countryData =
                 countries.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
@@ -52,20 +45,20 @@ namespace DistancesAPI
                          .Select(x => x.SplitDelimitedLine(','))
                          .Select(x => x.Select(y => y.Trim()).ToArray())
                          .Select(
-                             x => new
-                             {
-                                 Year = x[0],
-                                 Country = x[1],
-                                 Population = double.Parse(x[2]),
-                                 City = new City(x[3], double.Parse(x[4]), new Coordinates(double.Parse(x[5]), double.Parse(x[6])))
-                             })
+                              x => new
+                              {
+                                  Year = x[0],
+                                  Country = x[1],
+                                  Population = double.Parse(x[2]),
+                                  City = new City(x[3], double.Parse(x[4]), new Coordinates(double.Parse(x[5]), double.Parse(x[6])))
+                              })
                          .GroupBy(
-                             x => new
-                             {
-                                 x.Year,
-                                 x.Country,
-                                 x.Population
-                             })
+                              x => new
+                              {
+                                  x.Year,
+                                  x.Country,
+                                  x.Population
+                              })
                          .Select(x => new Country(x.Key.Country, x.Key.Year, x.Key.Population, x.Select(y => y.City)));
 
             return PopulationWeightedDistanceFromJson(countryData);

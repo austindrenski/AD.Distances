@@ -19,10 +19,7 @@ namespace DistancesAPI
             SupportedEncodings.Add(UTF8EncodingWithoutBOM);
         }
 
-        protected override bool CanReadType(Type type)
-        {
-            return type == typeof(string);
-        }
+        protected override bool CanReadType(Type type) => type == typeof(string);
 
         public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context, Encoding encoding)
         {

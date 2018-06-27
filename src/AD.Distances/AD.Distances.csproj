@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
   <PropertyGroup>
     <DocumentationFile>bin/Release/$(TargetFramework)/AD.Distances.xml</DocumentationFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -17,11 +15,9 @@
     <Authors>Austin Drenski</Authors>
     <Company>Austin Drenski</Company>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="AD.IO" Version="1.5.35" />
+    <PackageReference Include="AD.IO" Version="1.5.36" />
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
-
 </Project>

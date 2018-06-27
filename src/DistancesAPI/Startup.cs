@@ -20,6 +20,7 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace DistancesAPI
 {
+    /// <inheritdoc />
     [PublicAPI]
     public sealed class Startup : IStartup
     {
@@ -35,15 +36,7 @@ namespace DistancesAPI
         /// The application configuration properties available from the <see cref="IWebHostBuilder"/>.
         /// </param>
         /// <exception cref="ArgumentNullException" />
-        public Startup([NotNull] IConfiguration configuration)
-        {
-            if (configuration is null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            Configuration = configuration;
-        }
+        public Startup([NotNull] IConfiguration configuration) => Configuration = configuration;
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to add services to the container.
@@ -52,31 +45,24 @@ namespace DistancesAPI
         [Pure]
         [NotNull]
         public IServiceProvider ConfigureServices([NotNull] IServiceCollection services)
-        {
-            if (services is null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            return
-                services.AddLogging(x => x.AddConsole())
-                        .AddApiVersioning(
+            => services.AddLogging(x => x.AddConsole())
+                       .AddApiVersioning(
                             x =>
                             {
                                 x.AssumeDefaultVersionWhenUnspecified = true;
                                 x.DefaultApiVersion = new ApiVersion(1, 0);
                             })
-                        .AddResponseCompression(x => x.Providers.Add<GzipCompressionProvider>())
-                        .Configure<GzipCompressionProviderOptions>(x => x.Level = CompressionLevel.Fastest)
-                        .AddRouting(x => x.LowercaseUrls = true)
-                        .AddAntiforgery(
+                       .AddResponseCompression(x => x.Providers.Add<GzipCompressionProvider>())
+                       .Configure<GzipCompressionProviderOptions>(x => x.Level = CompressionLevel.Fastest)
+                       .AddRouting(x => x.LowercaseUrls = true)
+                       .AddAntiforgery(
                             x =>
                             {
                                 x.HeaderName = "x-xsrf-token";
                                 x.Cookie.HttpOnly = true;
                                 x.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                             })
-                        .AddSwaggerGen(
+                       .AddSwaggerGen(
                             x =>
                             {
                                 x.DescribeAllEnumsAsStrings();
@@ -89,9 +75,9 @@ namespace DistancesAPI
                                 x.OrderActionsBy(y => y.RelativePath);
                                 x.SwaggerDoc("v1", new Info { Title = "Distances API", Version = "v1" });
                             })
-                        .AddExceptionProvider<OperationCanceledException>(HttpMethods.Get, StatusCodes.Status400BadRequest)
-                        .AddExceptionProvider<OperationCanceledException>(HttpMethods.Post, StatusCodes.Status400BadRequest)
-                        .AddMvc(
+                       .AddExceptionProvider<OperationCanceledException>(HttpMethods.Get, StatusCodes.Status400BadRequest)
+                       .AddExceptionProvider<OperationCanceledException>(HttpMethods.Post, StatusCodes.Status400BadRequest)
+                       .AddMvc(
                             x =>
                             {
                                 x.AddModelValidationFilter();
@@ -101,17 +87,16 @@ namespace DistancesAPI
                                 x.ModelMetadataDetailsProviders.Add(new RequiredBindingMetadataProvider());
                                 x.RespectBrowserAcceptHeader = true;
                             })
-                        .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                        .AddJsonOptions(
+                       .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                       .AddJsonOptions(
                             x =>
                             {
                                 x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                                 x.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
                                 x.SerializerSettings.Formatting = Formatting.Indented;
                             })
-                        .Services
-                        .BuildServiceProvider();
-        }
+                       .Services
+                       .BuildServiceProvider();
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -129,16 +114,16 @@ namespace DistancesAPI
                    .UseResponseCompression()
                    .UseSwagger(x => x.RouteTemplate = "docs/{documentName}/swagger.json")
                    .UseSwaggerUI(
-                       x =>
-                       {
-                           x.DefaultModelRendering(ModelRendering.Model);
-                           x.DisplayRequestDuration();
-                           x.DocExpansion(DocExpansion.None);
-                           x.DocumentTitle = "Distances API Documentation";
-                           x.HeadContent = "Distances API Documentation";
-                           x.RoutePrefix = "docs";
-                           x.SwaggerEndpoint("v1/swagger.json", "Distances API Documentation");
-                       })
+                        x =>
+                        {
+                            x.DefaultModelRendering(ModelRendering.Model);
+                            x.DisplayRequestDuration();
+                            x.DocExpansion(DocExpansion.None);
+                            x.DocumentTitle = "Distances API Documentation";
+                            x.HeadContent = "Distances API Documentation";
+                            x.RoutePrefix = "docs";
+                            x.SwaggerEndpoint("v1/swagger.json", "Distances API Documentation");
+                        })
                    .UseMvc();
         }
     }

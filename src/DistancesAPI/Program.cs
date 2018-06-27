@@ -15,10 +15,7 @@ namespace DistancesAPI
         ///
         /// </summary>
         /// <param name="args"></param>
-        public static void Main([NotNull] [ItemNotNull] string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
+        public static void Main([NotNull] [ItemNotNull] string[] args) => CreateWebHostBuilder(args).Build().Run();
 
         /// <summary>
         ///
@@ -27,11 +24,8 @@ namespace DistancesAPI
         [Pure]
         [NotNull]
         public static IWebHostBuilder CreateWebHostBuilder(StringValues args)
-        {
-            return
-                new WebHostBuilder()
-                    .UseStartup<Startup>(args)
-                    .UseHttpSys();
-        }
+            => new WebHostBuilder()
+              .UseStartup<Startup>(args)
+              .UseHttpSys();
     }
 }
