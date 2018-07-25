@@ -1,6 +1,5 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Primitives;
 using AD.ApiExtensions.Hosting;
 
 namespace DistancesAPI
@@ -23,7 +22,7 @@ namespace DistancesAPI
         /// <returns></returns>
         [Pure]
         [NotNull]
-        public static IWebHostBuilder CreateWebHostBuilder(StringValues args)
+        public static IWebHostBuilder CreateWebHostBuilder([NotNull] [ItemNotNull] string[] args)
             => new WebHostBuilder()
               .UseStartup<Startup>(args)
               .UseHttpSys();

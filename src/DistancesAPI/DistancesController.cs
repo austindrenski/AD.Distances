@@ -28,9 +28,7 @@ namespace DistancesAPI
             if (countries is null)
                 throw new ArgumentNullException(nameof(countries));
 
-            IEnumerable<(Country A, Country B, double Distance)> data = Country.Distance(countries);
-
-            return Json(data.Select(x => new { x.A.Year, A = x.A.Name, B = x.B.Name, x.Distance }));
+            return Json(Country.Distance(countries).Select(x => new { x.A.Year, A = x.A.Name, B = x.B.Name, x.Distance }));
         }
 
         [HttpPost("csv")]

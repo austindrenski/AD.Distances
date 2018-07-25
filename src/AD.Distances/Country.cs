@@ -58,24 +58,16 @@ namespace AD.Distances
         public Country([NotNull] string name, [NotNull] string year, double population, [NotNull] [ItemNotNull] IEnumerable<City> cities)
         {
             if (name is null)
-            {
                 throw new ArgumentNullException(nameof(name));
-            }
 
             if (year is null)
-            {
                 throw new ArgumentNullException(nameof(year));
-            }
 
             if (population < 0)
-            {
                 throw new ArgumentOutOfRangeException(nameof(population));
-            }
 
             if (cities is null)
-            {
                 throw new ArgumentNullException(nameof(cities));
-            }
 
             Name = name;
             Year = year;
@@ -87,10 +79,7 @@ namespace AD.Distances
         /// Returns a string that represents the current object.
         /// </summary>
         [Pure]
-        public override string ToString()
-        {
-            return $"({Name}, {Population}, {Cities.Count})";
-        }
+        public override string ToString() => $"({Name}, {Population}, {Cities.Count})";
 
         /// <summary>
         /// Calculates the population-weighted distance between the collection of countries grouped by year based on the great-circle distance between constituent cities.
@@ -106,9 +95,7 @@ namespace AD.Distances
         public static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull] [ItemNotNull] IEnumerable<Country> countries)
         {
             if (countries is null)
-            {
                 throw new ArgumentNullException(nameof(countries));
-            }
 
             return countries.GroupBy(x => x.Year).SelectMany(Distance);
         }
@@ -127,9 +114,7 @@ namespace AD.Distances
         public static IEnumerable<(Country A, Country B, double Distance)> Distance([NotNull] [ItemNotNull] IGrouping<string, Country> countries)
         {
             if (countries is null)
-            {
                 throw new ArgumentNullException(nameof(countries));
-            }
 
             Country[] countryArray = countries.ToArray();
 
@@ -162,14 +147,10 @@ namespace AD.Distances
         public static (Country A, Country B, double Distance) Distance([NotNull] Country a, [NotNull] Country b)
         {
             if (a is null)
-            {
                 throw new ArgumentNullException(nameof(a));
-            }
 
             if (b is null)
-            {
                 throw new ArgumentNullException(nameof(b));
-            }
 
             double result = 0;
 
@@ -194,71 +175,51 @@ namespace AD.Distances
         /// <summary>
         /// Custom JSON converter for the <see cref="T:AD.Distances.Country" /> class.
         /// </summary>
-        private sealed class CountryJsonConverter : JsonConverter
+        sealed class CountryJsonConverter : JsonConverter
         {
             /// <inheritdoc />
             [Pure]
-            public override bool CanConvert(Type objectType)
-            {
-                return typeof(Country).GetTypeInfo().IsAssignableFrom(objectType);
-            }
+            public override bool CanConvert(Type objectType) => typeof(Country).GetTypeInfo().IsAssignableFrom(objectType);
 
             /// <inheritdoc />
             [Pure]
             [NotNull]
-            public override object ReadJson([NotNull] JsonReader reader, Type objectType, [NotNull] object existingValue, [NotNull] JsonSerializer serializer)
+            public override object ReadJson([NotNull] JsonReader reader, [NotNull] Type objectType, [CanBeNull] object existingValue, [CanBeNull] JsonSerializer serializer)
             {
                 if (reader is null)
-                {
                     throw new ArgumentNullException(nameof(reader));
-                }
 
-                if (existingValue is null)
-                {
-                    throw new ArgumentNullException(nameof(existingValue));
-                }
-
-                if (serializer is null)
-                {
-                    throw new ArgumentNullException(nameof(serializer));
-                }
+                if (objectType is null)
+                    throw new ArgumentNullException(nameof(objectType));
 
                 JObject jObject = JObject.Load(reader);
 
                 return
                     new Country(
-                        jObject.Value<string>(nameof(Name)),
-                        jObject.Value<string>(nameof(Year)),
-                        jObject.Value<double>(nameof(Population)),
-                        jObject.Values<City>(nameof(Cities)));
+                        jObject.Value<string>(nameof(Name).ToLower()),
+                        jObject.Value<string>(nameof(Year).ToLower()),
+                        jObject.Value<double>(nameof(Population).ToLower()),
+                        jObject.Value<JArray>(nameof(Cities).ToLower())
+                               .ToObject<List<City>>());
             }
 
             /// <inheritdoc />
-            public override void WriteJson([NotNull] JsonWriter writer, [NotNull] object value, [NotNull] JsonSerializer serializer)
+            public override void WriteJson([NotNull] JsonWriter writer, [NotNull] object value, [CanBeNull] JsonSerializer serializer)
             {
                 if (writer is null)
-                {
                     throw new ArgumentNullException(nameof(writer));
-                }
 
                 if (value is null)
-                {
                     throw new ArgumentNullException(nameof(value));
-                }
-
-                if (serializer is null)
-                {
-                    throw new ArgumentNullException(nameof(serializer));
-                }
 
                 Country country = (Country) value;
 
                 JToken token =
                     new JObject(
-                        new JProperty(nameof(Name), country.Name),
-                        new JProperty(nameof(Year), country.Year),
-                        new JProperty(nameof(Population), country.Population),
-                        new JProperty(nameof(Cities),
+                        new JProperty(nameof(Name).ToLower(), country.Name),
+                        new JProperty(nameof(Year).ToLower(), country.Year),
+                        new JProperty(nameof(Population).ToLower(), country.Population),
+                        new JProperty(nameof(Cities).ToLower(),
                             new JArray(country.Cities.Select(JToken.FromObject))));
 
                 token.WriteTo(writer);

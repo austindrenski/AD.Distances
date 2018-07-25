@@ -27,7 +27,7 @@ namespace DistancesAPI
         /// <summary>
         /// Represents the application configuration properties available during construction.
         /// </summary>
-        private IConfiguration Configuration { get; }
+        IConfiguration Configuration { get; }
 
         /// <summary>
         /// Constructs an <see cref="IStartup"/> for configuration.
@@ -103,28 +103,21 @@ namespace DistancesAPI
         /// </summary>
         /// <exception cref="ArgumentNullException" />
         public void Configure([NotNull] IApplicationBuilder builder)
-        {
-            if (builder is null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            builder.UseServerHeader(string.Empty)
-                   .UseHeadMethod()
-                   .UseResponseCompression()
-                   .UseSwagger(x => x.RouteTemplate = "docs/{documentName}/swagger.json")
-                   .UseSwaggerUI(
-                        x =>
-                        {
-                            x.DefaultModelRendering(ModelRendering.Model);
-                            x.DisplayRequestDuration();
-                            x.DocExpansion(DocExpansion.None);
-                            x.DocumentTitle = "Distances API Documentation";
-                            x.HeadContent = "Distances API Documentation";
-                            x.RoutePrefix = "docs";
-                            x.SwaggerEndpoint("v1/swagger.json", "Distances API Documentation");
-                        })
-                   .UseMvc();
-        }
+            => builder.UseServerHeader(string.Empty)
+                      .UseHeadMethod()
+                      .UseResponseCompression()
+                      .UseSwagger(x => x.RouteTemplate = "docs/{documentName}/swagger.json")
+                      .UseSwaggerUI(
+                           x =>
+                           {
+                               x.DefaultModelRendering(ModelRendering.Model);
+                               x.DisplayRequestDuration();
+                               x.DocExpansion(DocExpansion.None);
+                               x.DocumentTitle = "Distances API Documentation";
+                               x.HeadContent = "Distances API Documentation";
+                               x.RoutePrefix = "docs";
+                               x.SwaggerEndpoint("v1/swagger.json", "Distances API Documentation");
+                           })
+                      .UseMvc();
     }
 }

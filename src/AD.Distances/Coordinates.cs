@@ -16,22 +16,22 @@ namespace AD.Distances
         /// <summary>
         /// The mean radius in kilometers of the Earth as defined by the Internation Union of Geodesy and Geophysics (IUGG).
         /// </summary>
-        private const double EarthMeanRadius = 6371.0088;
+        const double EarthMeanRadius = 6371.0088;
 
         /// <summary>
         /// The scalar by which degrees can be multiplied to return radians.
         /// </summary>
-        private const double DegreesToRadians = Math.PI / 180.0;
+        const double DegreesToRadians = Math.PI / 180.0;
 
         /// <summary>
         /// The sine of <see cref="Latitude"/>.
         /// </summary>
-        private readonly double _sineLatitude;
+        readonly double _sineLatitude;
 
         /// <summary>
         /// The cosine of <see cref="Latitude"/>.
         /// </summary>
-        private readonly double _cosineLatitude;
+        readonly double _cosineLatitude;
 
         /// <summary>
         /// The latitude in radians.
@@ -55,14 +55,10 @@ namespace AD.Distances
         public Coordinates(double latitude, double longitude)
         {
             if (latitude < -90.0 || latitude > 90.0)
-            {
                 throw new ArgumentException(nameof(latitude));
-            }
 
             if (longitude < -180.0 || longitude > 180.0)
-            {
                 throw new ArgumentException(nameof(longitude));
-            }
 
             Latitude = latitude * DegreesToRadians;
             Longitude = longitude * DegreesToRadians;
@@ -74,10 +70,7 @@ namespace AD.Distances
         /// Returns a string that represents the current object.
         /// </summary>
         [Pure]
-        public override string ToString()
-        {
-            return $"({Latitude}, {Longitude})";
-        }
+        public override string ToString() => $"({Latitude}, {Longitude})";
 
         /// <summary>
         /// Calculates the great-circle distance in kilometers between two locations.
@@ -110,16 +103,14 @@ namespace AD.Distances
         /// <summary>
         /// Custom JSON converter for the <see cref="T:AD.Distances.Coordinates" /> class.
         /// </summary>
-        private sealed class CoordinatesJsonConverter : JsonConverter
+        sealed class CoordinatesJsonConverter : JsonConverter
         {
             /// <inheritdoc />
             [Pure]
             public override bool CanConvert([NotNull] Type objectType)
             {
                 if (objectType is null)
-                {
                     throw new ArgumentNullException(nameof(objectType));
-                }
 
                 return typeof(Coordinates).GetTypeInfo().IsAssignableFrom(objectType);
             }
@@ -127,55 +118,37 @@ namespace AD.Distances
             /// <inheritdoc />
             [Pure]
             [NotNull]
-            public override object ReadJson([NotNull] JsonReader reader, [NotNull] Type objectType, [NotNull] object existingValue, [NotNull] JsonSerializer serializer)
+            public override object ReadJson([NotNull] JsonReader reader, [NotNull] Type objectType, [CanBeNull] object existingValue, [CanBeNull] JsonSerializer serializer)
             {
                 if (reader is null)
-                {
                     throw new ArgumentNullException(nameof(reader));
-                }
 
                 if (objectType is null)
-                {
                     throw new ArgumentNullException(nameof(objectType));
-                }
-
-                if (existingValue is null)
-                {
-                    throw new ArgumentNullException(nameof(existingValue));
-                }
-
-                if (serializer is null)
-                {
-                    throw new ArgumentNullException(nameof(serializer));
-                }
 
                 JObject jObject = JObject.Load(reader);
 
                 return
                     new Coordinates(
-                        jObject.Value<double>(nameof(Latitude)),
-                        jObject.Value<double>(nameof(Longitude)));
+                        jObject.Value<double>(nameof(Latitude).ToLower()),
+                        jObject.Value<double>(nameof(Longitude).ToLower()));
             }
 
             /// <inheritdoc />
-            public override void WriteJson([NotNull] JsonWriter writer, object value, [NotNull] JsonSerializer serializer)
+            public override void WriteJson([NotNull] JsonWriter writer, [NotNull] object value, [CanBeNull] JsonSerializer serializer)
             {
                 if (writer is null)
-                {
                     throw new ArgumentNullException(nameof(writer));
-                }
 
-                if (serializer is null)
-                {
-                    throw new ArgumentNullException(nameof(serializer));
-                }
+                if (value is null)
+                    throw new ArgumentNullException(nameof(value));
 
                 Coordinates coordinates = (Coordinates) value;
 
                 JToken token =
                     new JObject(
-                        new JProperty(nameof(Latitude), coordinates.Latitude),
-                        new JProperty(nameof(Longitude), coordinates.Longitude));
+                        new JProperty(nameof(Latitude).ToLower(), coordinates.Latitude),
+                        new JProperty(nameof(Longitude).ToLower(), coordinates.Longitude));
 
                 token.WriteTo(writer);
             }
