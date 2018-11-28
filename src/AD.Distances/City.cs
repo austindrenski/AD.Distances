@@ -27,7 +27,7 @@ namespace AD.Distances
         /// <summary>
         /// The latitude and longitude of the <see cref="City"/>.
         /// </summary>
-        public readonly Coordinates Coordinates;
+        public Coordinates Coordinates { get; }
 
         /// <summary>
         /// Constructs a <see cref="City"/> with the given location and characteristics.
@@ -41,9 +41,9 @@ namespace AD.Distances
         /// <param name="location">
         /// The location of the city.
         /// </param>
-        public City([NotNull] string name, double population, Coordinates location)
+        public City([NotNull] string name, double population, in Coordinates location)
         {
-            if (name is null)
+            if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
             if (population < 0)
@@ -58,57 +58,48 @@ namespace AD.Distances
         /// Returns a string that represents the current object.
         /// </summary>
         [Pure]
+        [NotNull]
         public override string ToString() => $"({Name}, {Population})";
 
         /// <summary>
         /// Calculates the great-circle distance in kilometers between two cities.
         /// </summary>
-        /// <param name="a">
-        /// The first <see cref="City"/>.
-        /// </param>
-        /// <param name="b">
-        /// The second <see cref="City"/>.
-        /// </param>
+        /// <param name="a">The first <see cref="City"/>.</param>
+        /// <param name="b">The second <see cref="City"/>.</param>
         /// <returns>
         /// The great-circle distance in kilometers.
         /// </returns>
         [Pure]
         public static double Distance([NotNull] City a, [NotNull] City b)
         {
-            if (a is null)
+            if (a == null)
                 throw new ArgumentNullException(nameof(a));
 
-            if (b is null)
+            if (b == null)
                 throw new ArgumentNullException(nameof(b));
 
             return Coordinates.GreatCircleDistance(a.Coordinates, b.Coordinates);
         }
 
-        /// <inheritdoc />
         /// <summary>
         /// Custom JSON converter for the <see cref="T:AD.Distances.City" /> class.
         /// </summary>
+        /// <inheritdoc />
         sealed class CityJsonConverter : JsonConverter
         {
             /// <inheritdoc />
             [Pure]
-            public override bool CanConvert([NotNull] Type objectType)
-            {
-                if (objectType is null)
-                    throw new ArgumentNullException(nameof(objectType));
-
-                return typeof(City).GetTypeInfo().IsAssignableFrom(objectType);
-            }
+            public override bool CanConvert([CanBeNull] Type objectType) => typeof(City).GetTypeInfo().IsAssignableFrom(objectType);
 
             /// <inheritdoc />
             [Pure]
             [NotNull]
             public override object ReadJson([NotNull] JsonReader reader, [NotNull] Type objectType, [CanBeNull] object existingValue, [CanBeNull] JsonSerializer serializer)
             {
-                if (reader is null)
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
 
-                if (objectType is null)
+                if (objectType == null)
                     throw new ArgumentNullException(nameof(objectType));
 
                 JObject jObject = JObject.Load(reader);
@@ -124,10 +115,10 @@ namespace AD.Distances
             /// <inheritdoc />
             public override void WriteJson([NotNull] JsonWriter writer, [NotNull] object value, [CanBeNull] JsonSerializer serializer)
             {
-                if (writer is null)
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
 
-                if (value is null)
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
 
                 City city = (City) value;

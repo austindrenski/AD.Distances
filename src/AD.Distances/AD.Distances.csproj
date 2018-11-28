@@ -1,23 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
+    <DefineConstants>JETBRAINS_ANNOTATIONS</DefineConstants>
     <DocumentationFile>bin/Release/$(TargetFramework)/AD.Distances.xml</DocumentationFile>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>C# library to calculate distances.</Description>
-    <Copyright>Copyright (c) 2017 Austin Drenski</Copyright>
-    <PackageLicenseUrl>https://github.com/austindrenski/AD.Distances/raw/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/austindrenski/AD.Distances</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/austindrenski/AD.Distances</RepositoryUrl>
+  </PropertyGroup>
+  <PropertyGroup>
     <Authors>Austin Drenski</Authors>
     <Company>Austin Drenski</Company>
+    <Copyright>Copyright (c) 2017 Austin Drenski</Copyright>
+    <Description>C# library to calculate distances.</Description>
+    <PackageLicenseUrl>https://github.com/austindrenski/AD.Distances/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/austindrenski/AD.Distances</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/austindrenski/AD.Distances</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AD.IO" Version="1.5.40" />
-    <PackageReference Include="JetBrains.Annotations" Version="2018.2.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="AD.IO" Version="2.0.0.2" PrivateAssets="None" />
+    <PackageReference Include="JetBrains.Annotations" Version="2018.2.1" PrivateAssets="All" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" PrivateAssets="None" />
   </ItemGroup>
 </Project>

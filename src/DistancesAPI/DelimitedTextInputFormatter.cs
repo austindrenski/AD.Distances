@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace DistancesAPI
 {
+    /// <inheritdoc />
     [PublicAPI]
     public class DelimitedTextInputFormatter : TextInputFormatter
     {
+        /// <inheritdoc />
         public DelimitedTextInputFormatter()
         {
             SupportedMediaTypes.Add("text/csv");
@@ -19,9 +21,13 @@ namespace DistancesAPI
             SupportedEncodings.Add(UTF8EncodingWithoutBOM);
         }
 
-        protected override bool CanReadType(Type type) => type == typeof(string);
+        /// <inheritdoc />
+        protected override bool CanReadType([CanBeNull] Type type) => type == typeof(string);
 
-        public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context, Encoding encoding)
+        /// <inheritdoc />
+        public override async Task<InputFormatterResult> ReadRequestBodyAsync(
+            [NotNull] InputFormatterContext context,
+            [CanBeNull] Encoding encoding)
         {
             using (TextReader streamReader = context.ReaderFactory(context.HttpContext.Request.Body, encoding))
             {

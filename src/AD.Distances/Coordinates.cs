@@ -14,7 +14,7 @@ namespace AD.Distances
     public readonly struct Coordinates
     {
         /// <summary>
-        /// The mean radius in kilometers of the Earth as defined by the Internation Union of Geodesy and Geophysics (IUGG).
+        /// The mean radius in kilometers of the Earth as defined by the International Union of Geodesy and Geophysics (IUGG).
         /// </summary>
         const double EarthMeanRadius = 6371.0088;
 
@@ -46,12 +46,8 @@ namespace AD.Distances
         /// <summary>
         /// Constructs a location defined by the <paramref name="latitude"/> and <paramref name="longitude"/> in degrees.
         /// </summary>
-        /// <param name="latitude">
-        /// The latitude in degrees.
-        /// </param>
-        /// <param name="longitude">
-        /// The longitude in degrees.
-        /// </param>
+        /// <param name="latitude">The latitude in degrees.</param>
+        /// <param name="longitude">The longitude in degrees.</param>
         public Coordinates(double latitude, double longitude)
         {
             if (latitude < -90.0 || latitude > 90.0)
@@ -70,22 +66,19 @@ namespace AD.Distances
         /// Returns a string that represents the current object.
         /// </summary>
         [Pure]
+        [NotNull]
         public override string ToString() => $"({Latitude}, {Longitude})";
 
         /// <summary>
         /// Calculates the great-circle distance in kilometers between two locations.
         /// </summary>
-        /// <param name="a">
-        /// The first <see cref="Coordinates"/>.
-        /// </param>
-        /// <param name="b">
-        /// The second <see cref="Coordinates"/>.
-        /// </param>
+        /// <param name="a">The first <see cref="Coordinates"/>.</param>
+        /// <param name="b">The second <see cref="Coordinates"/>.</param>
         /// <returns>
         /// The great-circle distance in kilometers between the two locations.
         /// </returns>
         [Pure]
-        public static double GreatCircleDistance(Coordinates a, Coordinates b)
+        public static double GreatCircleDistance(in Coordinates a, in Coordinates b)
         {
             double deltaLongitude = Math.Abs(a.Longitude - b.Longitude);
             double cosineDeltaLongitude = Math.Cos(deltaLongitude);
@@ -99,31 +92,25 @@ namespace AD.Distances
             return EarthMeanRadius * Math.Atan2(Math.Sqrt(numerator), denominator);
         }
 
-        /// <inheritdoc />
         /// <summary>
         /// Custom JSON converter for the <see cref="T:AD.Distances.Coordinates" /> class.
         /// </summary>
+        /// <inheritdoc />
         sealed class CoordinatesJsonConverter : JsonConverter
         {
             /// <inheritdoc />
             [Pure]
-            public override bool CanConvert([NotNull] Type objectType)
-            {
-                if (objectType is null)
-                    throw new ArgumentNullException(nameof(objectType));
-
-                return typeof(Coordinates).GetTypeInfo().IsAssignableFrom(objectType);
-            }
+            public override bool CanConvert([CanBeNull] Type objectType) => typeof(Coordinates).GetTypeInfo().IsAssignableFrom(objectType);
 
             /// <inheritdoc />
             [Pure]
             [NotNull]
             public override object ReadJson([NotNull] JsonReader reader, [NotNull] Type objectType, [CanBeNull] object existingValue, [CanBeNull] JsonSerializer serializer)
             {
-                if (reader is null)
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
 
-                if (objectType is null)
+                if (objectType == null)
                     throw new ArgumentNullException(nameof(objectType));
 
                 JObject jObject = JObject.Load(reader);
@@ -137,10 +124,10 @@ namespace AD.Distances
             /// <inheritdoc />
             public override void WriteJson([NotNull] JsonWriter writer, [NotNull] object value, [CanBeNull] JsonSerializer serializer)
             {
-                if (writer is null)
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
 
-                if (value is null)
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
 
                 Coordinates coordinates = (Coordinates) value;
