@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistancesAPI", "src\Distanc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AD.Distances.Tests", "test\AD.Distances.Tests\AD.Distances.Tests.csproj", "{42EAB988-5057-468C-AB20-197EF484A3A4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{45DFAEC6-5DB4-44D0-A0CA-9A8BF4D698F5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7292D03E-3C41-4A3B-89CD-480A0532B638}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,5 +37,10 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {88ED3447-00F4-4A27-B9F1-2FB9AD631D11}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B5ACA397-6ED7-4984-9288-24723D2615AA} = {45DFAEC6-5DB4-44D0-A0CA-9A8BF4D698F5}
+		{1A16F8ED-6D5F-4A71-8210-7AA30D25B0BE} = {45DFAEC6-5DB4-44D0-A0CA-9A8BF4D698F5}
+		{42EAB988-5057-468C-AB20-197EF484A3A4} = {7292D03E-3C41-4A3B-89CD-480A0532B638}
 	EndGlobalSection
 EndGlobal

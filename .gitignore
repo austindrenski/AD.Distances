@@ -1,7 +1,13 @@
-bin/
+﻿bin/
 obj/
 packages/
+client/
 .idea/
 .vscode/
 wwwroot/
+!src/DistancesAPI/wwwroot/css/site.css
+!src/DistancesAPI/wwwroot/js/site.js
+!src/DistancesAPI/wwwroot/docs/swagger-ui/swagger.css
 *.DotSettings.user
+*.pdf
+*.html

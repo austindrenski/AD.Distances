@@ -1,30 +1,35 @@
-﻿using JetBrains.Annotations;
+﻿using System.IO;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
-using AD.ApiExtensions.Hosting;
+using AD.ApiExtensions;
 
 namespace DistancesAPI
 {
     /// <summary>
-    ///
+    /// The entry point for the <see cref="DistancesAPI"/> application.
     /// </summary>
     [PublicAPI]
     public static class Program
     {
         /// <summary>
-        ///
+        /// The main entry point called by the CLR upon startup.
         /// </summary>
-        /// <param name="args"></param>
+        /// <param name="args">The command line arguments.</param>
         public static void Main([NotNull] [ItemNotNull] string[] args) => CreateWebHostBuilder(args).Build().Run();
 
         /// <summary>
-        ///
+        /// Creates a <see cref="IWebHostBuilder"/> for the current application.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="args">The command line arguments.</param>
+        /// <returns>
+        /// An instance of <see cref="IWebHostBuilder"/>.
+        /// </returns>
         [Pure]
         [NotNull]
-        public static IWebHostBuilder CreateWebHostBuilder([NotNull] [ItemNotNull] string[] args)
+        public static IWebHostBuilder CreateWebHostBuilder([NotNull] string[] args)
             => new WebHostBuilder()
-              .UseStartup<Startup>(args)
-              .UseHttpSys();
+               .UseContentRoot(Directory.GetCurrentDirectory())
+               .UseStartup<Startup>(args)
+               .UseHttpSys();
     }
 }

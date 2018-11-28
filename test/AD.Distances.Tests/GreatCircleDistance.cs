@@ -12,6 +12,7 @@ namespace AD.Distances.Tests
 
         public static readonly Coordinates Chicago = new Coordinates(41.8781136, -87.6297982);
 
+        [ItemNotNull]
         public static IEnumerable<object[]> TestData
         {
             get
